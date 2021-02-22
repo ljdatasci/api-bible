@@ -3,7 +3,7 @@ interface IBibles {
     abbreviation?: string;
     name?: string;
     ids?: string[];
-    includeFullDetails?: boolean;
+    "include-full-details"?: boolean;
 }
 
 interface IBibleById {
@@ -19,8 +19,8 @@ interface IAudioBibleById {
 }
 
 interface IBooks extends IBibleById {
-    includeChapters?: boolean;
-    includeChaptersAndSections?: boolean;
+    "include-chapters"?: boolean;
+    "include-chapters-and-sections"?: boolean;
 }
 
 interface IBooksById extends IBibleById, IBooks {
@@ -35,12 +35,12 @@ interface IChapters extends IBooksById { }
 
 interface IChaptersById extends IBibleById {
     chapterId: string;
-    contentType: string;
-    includeNotes?: boolean;
-    includeTitles?: boolean;
-    includeChapterNumbers?: boolean;
-    includeVerseNumbers?: boolean;
-    includeVerseSpans?: boolean;
+    "content-type": string;
+    "include-notes"?: boolean;
+    "include-titles"?: boolean;
+    "include-chapter-numbers"?: boolean;
+    "include-verse-numbers"?: boolean;
+    "include-verse-spans"?: boolean;
     parallels?: string[];
 
 }
@@ -59,14 +59,14 @@ interface ISectionsById extends IBibleById {
 
 interface IPassages extends IChaptersById {
     passageId: string;
-    useOrgId?: boolean;
+    "use-org-id"?: boolean;
 }
 
 interface IVerses extends IChaptersById { }
 
-interface IVerseById extends IChaptersById {
+interface IVerseById extends IBibleById {
     verseId: string;
-    useOrgId?: boolean;
+    "use-org-id"?: boolean;
 }
 
 interface ISearch extends IBibleById {
