@@ -1,7 +1,7 @@
 {
   "name": "api-bible",
   "version": "0.1.0",
-  "description": "An ansynchronous API client for API.Bible.",
+  "description": "An ansynchronous API client for API.Bible. In progress.",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc"
@@ -11,8 +11,8 @@
     "url": "git+https://github.com/ljdatasci/api-bible.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Laurie Jefferson",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ljdatasci/api-bible/issues"
   },
