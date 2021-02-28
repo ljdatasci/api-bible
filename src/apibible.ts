@@ -1,10 +1,10 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
-interface Bibles {
+interface BibleProps {
     language?: string;
     abbreviation?: string;
     name?: string;
-    ids?: Array<string>;
+    ids?: string;
     "include-full-details"?: boolean;
 }
 
@@ -12,7 +12,7 @@ interface IBibleById {
     bibleId: string;
 }
 
-interface IAudioBibles extends Bibles {
+interface IAudioBibles extends BibleProps {
     bibleId?: string;
 }
 
@@ -329,101 +329,96 @@ type AudioChapter = {
 }
 
 export class APIBible {
-
-    private baseUrl: string = 'https://api.scripture.api.bible/v1';
+    private url: string = '';
+    private baseUrl: string = 'https://api.scripture.api.bible/v1/bibles';
 
     constructor(private apikey: string) { }
 
-    getBibles(options: Bibles): void {
-        axios.get(
-            this.baseUrl + '/bibles?' +
-            'language=' + options.language +
-            '&abbrevation=' + options.abbreviation +
-            '&name=' + options.name +
-            '&ids=' + options.ids +
-            '&include-full-details=' + options['include-full-details'], {
+    getBibles(params: BibleProps): void {
+        let config = {
+            params,
             headers: {
                 'api-key': this.apikey
             }
         }
-
-        ).then((response: AxiosResponse) => console.log(response))
-            .catch(err => console.log(err));
+        axios.get<Bible>(this.baseUrl, config)
+            .then((response: AxiosResponse<Bible>) => console.log(response.data))
+            .catch((err: AxiosError) => console.log(err));
     }
 
-    getBiblesById(options: object) {
+    getBiblesById(params: object) {
         return;
     }
 
-    getAudioBibles(options: object) {
+    getAudioBibles(params: object) {
         return;
     }
 
-    getAudioBiblesById(options: object) {
+    getAudioBiblesById(params: object) {
         return;
     }
 
-    getBoks(options: object) {
+    getBoks(params: object) {
         return;
     }
 
-    getBooksById(options: object) {
+    getBooksById(params: object) {
         return;
     }
 
-    getAudioBooks(options: object) {
+    getAudioBooks(params: object) {
         return;
     }
 
-    getAudioBooksById(options: object) {
+    getAudioBooksById(params: object) {
         return;
     }
 
-    getChapters(options: object) {
+    getChapters(params: object) {
         return;
     }
 
-    getChaptersById(options: object) {
+    getChaptersById(params: object) {
         return;
     }
 
-    getAudioChapters(options: object) {
+    getAudioChapters(params: object) {
         return;
     }
 
-    getAudioChaptersById(options: object) {
+    getAudioChaptersById(params: object) {
         return;
     }
 
-    getSections(options: object) {
+    getSections(params: object) {
         return;
     }
 
-    getSectionsByChapter(options: object) {
+    getSectionsByChapter(params: object) {
         return;
     }
 
-    getSectionsById(options: object) {
+    getSectionsById(params: object) {
         return;
     }
 
-    getPassages(options: object) {
+    getPassages(params: object) {
         return;
     }
 
-    getVerses(options: object) {
+    getVerses(params: object) {
         return;
     }
 
-    getVersesById(options: object) {
+    getVersesById(params: object) {
         return;
     }
 
-    search(options: object) {
+    search(params: object) {
         return;
     }
 
-    setUrl(options: object) {
+    setUrl(params: object) {
 
     }
 
