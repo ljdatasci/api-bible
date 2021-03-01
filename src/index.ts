@@ -1,7 +1,7 @@
 // export * from './apibible'
 import { APIBible } from './apibible'
 
-const apikey = 'a0d9be8c0c58709dfd7a430a27f5b532';
+const apikey = '';
 const params = {
     language: 'spa',
     // abbrevation: 'NendNP03',
