@@ -1,4 +1,5 @@
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse, AxiosError, AxiosInstance, AxiosPromise } from 'axios';
+
 
 interface BibleProps {
     language?: string;
@@ -8,34 +9,34 @@ interface BibleProps {
     "include-full-details"?: boolean;
 }
 
-interface IBibleById {
+interface BibleById {
     bibleId: string;
 }
 
-interface IAudioBibles extends BibleProps {
+interface AudioBibles extends BibleProps {
     bibleId?: string;
 }
 
-interface IAudioBibleById {
+interface AudioBibleById {
     audioBibleId: string;
 }
 
-interface IBooks extends IBibleById {
+interface Books extends BibleById {
     "include-chapters"?: boolean;
     "include-chapters-and-sections"?: boolean;
 }
 
-interface IBooksById extends IBibleById, IBooks {
+interface IBooksById extends BibleById, Books {
     bookId: string;
 }
 
-interface IAudioBooks extends IAudioBibleById, IBooks { }
+interface IAudioBooks extends AudioBibleById, Books { }
 
 interface IAudioBooksById extends IAudioBooks { }
 
 interface IChapters extends IBooksById { }
 
-interface IChaptersById extends IBibleById {
+interface IChaptersById extends BibleById {
     chapterId: string;
     "content-type": string;
     "include-notes"?: boolean;
@@ -47,7 +48,7 @@ interface IChaptersById extends IBibleById {
 
 }
 
-interface IAudioChapters extends IAudioBibleById, IBooks { }
+interface IAudioChapters extends AudioBibleById, Books { }
 
 interface IAudioChaptersById extends IAudioChapters { }
 
@@ -55,7 +56,7 @@ interface ISections extends IChapters { }
 
 interface ISectionsChapters extends IChapters { }
 
-interface ISectionsById extends IBibleById {
+interface ISectionsById extends BibleById {
     sectionId: string;
 }
 
@@ -66,12 +67,12 @@ interface IPassages extends IChaptersById {
 
 interface IVerses extends IChaptersById { }
 
-interface IVerseById extends IBibleById {
+interface IVerseById extends BibleById {
     verseId: string;
     "use-org-id"?: boolean;
 }
 
-interface ISearch extends IBibleById {
+interface ISearch extends BibleById {
     query?: string;
     limit?: number;
     offset?: number;
@@ -88,15 +89,20 @@ type Meta = {
     fumsNoScript: string;
 }
 
+enum ScriptDirection {
+    LTR = 'LTR',
+    RTL = 'RTL'
+}
+
 type Language = {
     id: string;
     name: string;
     nameLocal: string;
     script: string;
-    scriptDirection: string;
+    scriptDirection: ScriptDirection;
 }
 
-type Countries = {
+type Country = {
     id: string;
     name: string;
     nameLocal: string;
@@ -106,8 +112,8 @@ type AudioBibleSummary = {
     id: string;
     name: string;
     nameLocal: string;
-    description: string;
-    descriptionLocal: string;
+    description?: string;
+    descriptionLocal?: string;
 }
 
 
@@ -117,7 +123,7 @@ type BibleSummary = {
     abbreviation: string;
     abbreviationLocal: string;
     language: Language;
-    countries: Countries[];
+    countries: Country[];
     name: string;
     nameLocal: string;
     description: string;
@@ -135,7 +141,7 @@ type Bible = {
     abbreviationLocal: string;
     copywright?: string;
     language: Language;
-    countries: Countries[];
+    countries: Country[];
     name: string;
     nameLocal: string;
     description: string;
@@ -147,20 +153,27 @@ type Bible = {
     audioBibles: AudioBibleSummary[];
 }
 
+type BibleTypes = {
+    data: Bible[];
+}
+
 type ChapterSummary = {
     id: string;
     bibleId: string;
     number: string;
     bookId: string;
-    reference: string;
+    postion?: number;
+    sections?: string[]
 }
-type Books = {
+type BooksTypes = {
+    data: {
     id: string;
     bibleId: string;
     abbreviation: string;
     name: string;
     nameLong: string;
     chapters: ChapterSummary[];
+    }[]
 }
 
 type Chapter = {
@@ -285,18 +298,18 @@ type SearchResponse = {
 type AudioBible = {
     id: string;
     dblId: string;
-    abbreviation: string;
-    abbreviationLocal: string;
+    abbreviation: null | string;
+    abbreviationLocal: null | string;
     copyright: string;
     language: Language;
-    countries: Countries[];
+    countries: Country[];
     name: string;
     nameLocal: string;
-    description: string;
-    descriptionLocal: string;
+    description: null | string;
+    descriptionLocal: null | string;
     info: string;
     type: string;
-    updatedAt: string;
+    updatedAt: Date;
     relatedDbl: string;
 }
 
@@ -328,38 +341,40 @@ type AudioChapter = {
     copyright: string;
 }
 
-export class APIBible {
-    private url: string = '';
-    private baseUrl: string = 'https://api.scripture.api.bible/v1/bibles';
+export default class APIBible {
+  
 
-    constructor(private apikey: string) { }
+    private apiBible: AxiosInstance = axios.create({
+        baseURL: 'https://api.scripture.api.bible/v1',   
+    })
 
-    getBibles(params: BibleProps): void {
-        let config = {
-            params,
-            headers: {
-                'api-key': this.apikey
-            }
-        }
-        axios.get<Bible>(this.baseUrl, config)
-            .then((response: AxiosResponse<Bible>) => console.log(response.data))
-            .catch((err: AxiosError) => console.log(err));
+    constructor(private apikey: string) { 
+        this.apiBible.defaults.headers.common['api-key'] = this.apikey;
+    }
+    
+    getBibles = (params: BibleProps): AxiosPromise<BibleTypes> => {
+      return this.apiBible.get<BibleTypes>('/bibles', {params})
+    }
+    
+
+    getBiblesById = (params: BibleById): AxiosPromise<BibleTypes> => {
+        return this.apiBible.get<BibleTypes>(`/bibles/${params.bibleId}`);
     }
 
-    getBiblesById(params: object) {
-        return;
+    getAudioBibles = (params: AudioBibles): AxiosPromise<AudioBible> => {
+        return this.apiBible.get<AudioBible>('/audio-bibles', { params });
     }
 
-    getAudioBibles(params: object) {
-        return;
+    getAudioBiblesById = (params: AudioBibleById): AxiosPromise<AudioBible> => {
+        return this.apiBible.get<AudioBible>(`/audio-bibles/${params.audioBibleId}`)
     }
 
-    getAudioBiblesById(params: object) {
-        return;
-    }
-
-    getBoks(params: object) {
-        return;
+    getBooks = (params: Books): AxiosPromise<BooksTypes> => {
+        return this.apiBible.get<BooksTypes>(`/bibles/${params.bibleId}/books`, {
+            params: {
+                "include-chapters": params['include-chapters'],
+                "include-chapters-and-sections": params['include-chapters-and-sections']
+            }});
     }
 
     getBooksById(params: object) {
